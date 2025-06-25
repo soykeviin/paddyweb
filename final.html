@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi Princesa</title>
+    <style>
+        :root {
+            --color-rosa: #ff9bb3;
+            --color-lila: #d4a5ff;
+            --color-pastel: #fff0f5;
+            --color-texto: #5a3d5a;
+            --color-correcto: #8bc34a;
+            --color-incorrecto: #ff6b6b;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            color: var(--color-texto);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background-color: #fff0f5;
+        }
+        #background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .container {
+            background: rgba(255, 240, 245, 0.85);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .question-container {
+            display: block;
+        }
+        .question {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+        .answer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .option-btn {
+            background: white;
+            border: 2px solid var(--color-lila);
+            border-radius: 20px;
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .option-btn:hover {
+            background: var(--color-lila);
+            color: white;
+        }
+        .correct {
+            background: var(--color-correcto) !important;
+            color: white !important;
+        }
+        .incorrect {
+            background: var(--color-incorrecto) !important;
+            color: white !important;
+        }
+        .final-message, #final-message-text, #score-message {
+            display: none;
+        }
+        .heart-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .falling-heart {
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--color-rosa);
+            animation: falling linear forwards;
+        }
+        @keyframes falling {
+            0% {
+                transform: translateY(-10vh);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh);
+                opacity: 0;
+            }
+        }
+        #final-video {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            display: block;
+        }
+        #love-letter {
+            display: none;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <audio id="correct-sound" src="correcta.mp3"></audio>
+    <audio id="incorrect-sound" src="incorrecta.mp3"></audio>
+    <video id="background-video" autoplay loop muted>
+        <source src="video.mp4" type="video/mp4">
+    </video>
+    <div class="container">
+        <div id="question-container" class="question-container">
+            <div id="question" class="question"></div>
+            <div id="answer-grid" class="answer-grid"></div>
+        </div>
+        <div id="final-message-text">Has demostrado cuánto sabes sobre nosotros 💕</div>
+        <div id="score-message"></div>
+        <div class="final-message" id="final-message">
+            <h2>¡Felicitaciones, mi amor!</h2>
+            <div id="youtube-video-container"></div>
+            <div id="love-letter">
+                <p id="typed-text"></p>
+            </div>
+        </div>
+    </div>
+    <div class="heart-rain" id="heart-rain"></div>
+    <script>
+        const questionContainer = document.getElementById('question-container');
+        const questionEl = document.getElementById('question');
+        const answerGrid = document.getElementById('answer-grid');
+        const finalMessage = document.getElementById('final-message');
+        const finalText = document.getElementById('final-message-text');
+        const scoreMessage = document.getElementById('score-message');
+        const videoBg = document.getElementById('background-video');
+        const heartRain = document.getElementById('heart-rain');
+        const loveLetter = document.getElementById('love-letter');
+        const typedTextElement = document.getElementById('typed-text');
+        const youtubeVideoContainer = document.getElementById('youtube-video-container');
+
+        const questions = [
+            {
+                question: "¿Dónde nos dimos nuestro primer beso?",
+                options: ["En un XV", "En mi casa", "En el colegio", "En tu casa"],
+                answer: "En un XV"
+            },
+            {
+                question: "¿Cuál es mi película favorita?",
+                options: ["About time", "Nacho libre", "Interestelar", "Editando el amor"],
+                answer: "About time"
+            },
+            {
+                question: "¿Cuál es mi comida favorita?",
+                options: ["Milanesa", "Hamburguesa", "Lomito", "Pizza"],
+                answer: "Milanesa"
+            },
+            {
+                question: "¿Qué parte de tu cuerpo me gusta más?",
+                options: ["Tus pequitas", "Pelo", "Ojos", "Boca"],
+                answer: "Tus pequitas"
+            },
+            {
+                question: "¿Qué me hace poner celoso?",
+                options: ["Todas son correctas", "Que tengas amigos", "Que sigas a chicos", "Que subas fotos lindas"],
+                answer: "Todas son correctas"
+            },
+            {
+                question: "¿Cuánto me amas?",
+                options: ["Muchísimo", "Poco", "Nada", "Mucho"],
+                answer: "Muchísimo"
+            },
+            {
+                question: "¿Cuál es la contraseña de mi celular?",
+                options: ["191919", "1102", "1019", "1919"],
+                answer: "191919"
+            },
+            {
+                question: "¿Cuál es mi segundo juego favorito?",
+                options: ["Dead Island", "Fortnite", "Minecraft", "GTA V"],
+                answer: "Dead Island"
+            },
+            {
+                question: "¿Cuál es mi serie animada favorita?",
+                options: ["Rick and Morty", "Los Simpsons", "Big Mouth", "Un show más"],
+                answer: "Rick and Morty"
+            },
+            {
+                question: "¿A cuántos partidos de fútbol fuimos juntos?",
+                options: ["2", "1", "3", "0"],
+                answer: "2"
+            },
+            {
+                question: "¿Quién metió la chilena que vimos en vivo?",
+                options: ["Tony Sanabria", "Miguel Almirón", "Julio Enciso", "Matías Galarza"],
+                answer: "Tony Sanabria"
+            },
+            {
+                question: "Terminé el colegio en:",
+                options: ["2021", "2022", "2020", "2019"],
+                answer: "2021"
+            },
+            {
+                question: "¿Cuál es mi marca de pod favorita?",
+                options: ["Black Sheep", "Waka", "Life Pod", "VUSE"],
+                answer: "Black Sheep"
+            },
+            {
+                question: "¿Qué país no me gustaría visitar?",
+                options: ["España", "India", "Argentina", "Perú"],
+                answer: "España"
+            },
+            {
+                question: "¿Cuál es mi modelo de auto favorito?",
+                options: ["Chiron", "G Wagon", "GT3 RS", "720s"],
+                answer: "Chiron"
+            }
+        ];
+
+        let current = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+
+        function loadQuestion() {
+            videoBg.style.visibility = 'visible';
+            videoBg.play();
+            const q = questions[current];
+            questionEl.textContent = "";
+            answerGrid.innerHTML = "";
+            let i = 0;
+            const typeEffect = setInterval(() => {
+                questionEl.textContent += q.question[i++];
+                if (i >= q.question.length) {
+                    clearInterval(typeEffect);
+                    showOptions(q);
+                }
+            }, 50);
+        }
+
+        function showOptions(q) {
+            q.options.sort(() => Math.random() - 0.5).forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(opt, btn);
+                answerGrid.appendChild(btn);
+                setTimeout(() => {
+                    btn.style.opacity = "1";
+                    btn.style.transform = "translateY(0)";
+                }, 100);
+            });
+        }
+
+        function checkAnswer(opt, btn) {
+            if (opt === questions[current].answer) {
+                btn.classList.add('correct');
+                reproducirSonido("correcta.mp3");
+                correctCount++;
+                setTimeout(() => {
+                    current++;
+                    if (current < questions.length) {
+                        loadQuestion();
+                    } else {
+                        showFinal();
+                    }
+                }, 800);
+            } else {
+                btn.classList.add('incorrect');
+                reproducirSonido("incorrecta.mp3");
+                incorrectCount++;
+            }
+        }
+
+        function showFinal() {
+            questionContainer.style.display = 'none';
+            videoBg.style.visibility = 'hidden';
+            videoBg.pause();
+            videoBg.currentTime = 0;
+            document.body.style.backgroundImage = "url('fotofondo01.png')";
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+            document.body.style.backgroundRepeat = "no-repeat";
+            finalText.style.display = 'block';
+
+            scoreMessage.textContent = `Acertaste ${correctCount} preguntas y fallaste ${incorrectCount} preguntas.`;
+            scoreMessage.style.display = 'block';
+
+            setTimeout(() => {
+                heartRainEffect();
+                setTimeout(() => {
+                    finalMessage.style.display = 'block';
+                    setTimeout(() => {
+                        loadYouTubeVideo();
+                    }, 2500);
+                }, 1500);
+            }, 500);
+
+            setTimeout(() => {
+                scoreMessage.style.display = 'none';
+            }, 4000);
+        }
+
+        function loadYouTubeVideo() {
+            // Cargar la API de YouTube
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+            // Esta función se llamará automáticamente por la API de YouTube
+            window.onYouTubeIframeAPIReady = function() {
+                const player = new YT.Player('youtube-video-container', {
+                    height: '360',
+                    width: '640',
+                    videoId: 'ZsSSG26tH2k',
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            };
+
+            function onPlayerReady(event) {
+                event.target.playVideo();
+            }
+
+            function onPlayerStateChange(event) {
+                if (event.data === YT.PlayerState.PLAYING) {
+                    finalText.style.display = 'none';
+                }
+                if (event.data === YT.PlayerState.ENDED) {
+                    typeWriterEffect();
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen().catch(err => {
+                            console.error(`Error al salir de pantalla completa: ${err}`);
+                        });
+                    }
+                }
+            }
+        }
+
+        function typeWriterEffect() {
+            const text = `Te amo Patricia Anahi Sanhueza Dominguez y antes de contarte las 100 cosas que me gustan de vos, quiero que sepas algo... No importa cuántas cosas sean, cada día encuentro una nueva, y sé que me seguirás enamorando siempre. Te amo, y este es solo un pequeño intento de demostrarlo.
+
+💗 100 cosas que me gustan de vos 💗
+1. Me gusta tu risa.
+2. Me gusta tus ojos.
+3. Me gusta cuando me das mimos.
+4. Me gusta tu pelo
+5. Me gusta cuando te emocionás.
+6. Tus piecitos.
+7. Tus besotes.
+8. Tu olor.
+9. Cómo me decís que me amas.
+10. Tu sonrisa cuando te hago reír.
+11. Me gusta que seas tan inteligente.
+12. Cómo te vestís.
+13. Me encantan tus pequitas.
+14. Cómo arreglás tu pelo.
+15. Cuando decis que estás despeinada y me parecés hermosa igual.
+16. Cómo te enojás y después te pones mimosa.
+17. Cuando me pedís besitos.
+18. Cuando me decís que me extrañás.
+19. Cuando te ponés toxica.
+20. Cuando me cuidás aunque digas que no estás bien.
+21. Cuando me hablas de lo que te gusta.
+22. Cómo hablás de tus sueños.
+23. Lo mucho que te esforzás.
+24. Lo capaz que sos.
+25. Lo amable que sos con las personas.
+26. Cuando jugamos fortnite juntos.
+27. Que no necesitás decir nada para que te entienda.
+28. Cuando me decis que necesitas mis besos.
+29. Que verte puede alegrar hasta mi día mas triste.
+30. Cómo te brillan los ojos cuando algo te emociona el plan que tenemos.
+31. Cómo me hacés sentir amado.
+32. Cómo me hacés sentir especial.
+33. Cómo me hacés sentir elegido.
+34. Cómo me hacés sentir cuando estoy en tu casa.
+35. Que me hacés querer ser mejor.
+36. Que sos parte de lo más lindo que me pasó.
+37. Cómo me abrazás cuando estoy triste.
+38. Que me ames tanto.
+39. Cuando confiás en mí.
+40. Que puedo ser yo mismo cuando estamos juntos.
+41. Que me conocés más de lo que yo me conozco.
+42. Que me bancás incluso cuando no me banco ni yo.
+43. Que sos buena en fortnite aunque no lo creas.
+44. Que me hacés sentir que todo va a estar bien.
+45. Que me hacés sentir valioso.
+46. Cómo te apoyás en mí cuando necesitás.
+47. Cómo me ayudás a ver lo que valgo.
+48. Cómo me hacés sentir que tengo suerte de tenerte.
+49. Que seas tan tierna.
+50. Cuando te intresa lo que te cuento.
+51. Cómo te ponés nerviosa a veces.
+52. Cómo me hacés reír cuando te pones boba.
+53. Cuando lavas los platos por mi.
+54. Que seas tan sensible.
+55. Que te emocionás con cosas pequeñas.
+56. Cómo cuidás a quienes querés.
+57. Cómo hablás de lo que sentís.
+58. Cómo me hacés sentir seguro.
+59. Que nunca me juzgás.
+60. Que aprendiste a jugar mi juego fav.
+61. Tus mensajitos tiernos.
+62. Tus audios diciéndome cosas lindas.
+63. Cuando pones tu carita tierna.
+64. Cómo sabés cuándo necesito mimos.
+65. Tu capacidad de amar tanto.
+66. Tu fuerza cuando todo está mal.
+67. Cómo me enseñás cosas sin darte cuenta.
+68. Que me elegís cada día.
+69. Que pensás en los dos, no solo en vos.
+70. Que te importa cómo estoy.
+71. Cómo te ves cuando dormís.
+72. Cómo me agarrás la mano.
+73. Cómo me jodes.
+74. Que te acordás de detalles míos que hasta yo olvido.
+75. Que siempre te esforzás.
+76. La forma en que amas a los animales.
+77. Tus ganas de seguir, incluso cuando te sentís rota.
+78. Que me haces sentir que no estoy solo.
+79. Que me haces sentir importante.
+80. Cómo te pones feliz por cosas mías.
+81. Que me perdonaste cuando fallé.
+82. Que me enseñaste a ver el amor distinto.
+83. Que me motivas con el día a día.
+84. Que estás cuando no te lo pido.
+85. Que te emociona tanto tu carrera.
+86. Que me mandes fotitos donde salís toda hermosa.
+87. Que te mostras vulnerable conmigo.
+88. Que me hacés sentir que te importo más que nadie.
+89. Cómo me boludeas para que me ponga celoso.
+90. Que cuando te abrazo me siento feliz y en paz.
+91. Que vos sos lo primero que quiero ver al despertarme.
+92. Que sos lo último que quiero perder.
+93. Que no te das cuenta de lo hermosa que sos.
+94. Que para mí no hay nadie más hermosa que mi princesa.
+95. Que para mí no hay nadie más buena.
+96. Que cuando estás triste quiero abrazarte hasta que se te pase.
+97. Que cuando estás feliz, me llenás de alegría.
+98. Que cuando estamos juntos, no hay otra cosa que importe.
+99. Que sos el amor de mi vida.
+100. Que te amo con todo lo que soy.`;
+
+            loveLetter.style.display = 'block';
+            document.body.style.overflowY = 'auto';
+            heartRainEffect();
+            let i = 0;
+            const typingEffect = setInterval(() => {
+                typedTextElement.textContent += text[i++];
+                if (i >= text.length) {
+                    clearInterval(typingEffect);
+                }
+            }, 50);
+        }
+
+        function heartRainEffect() {
+            const hearts = ['❤️', '💖', '💗', '💓'];
+            setInterval(() => {
+                const h = document.createElement('div');
+                h.className = 'falling-heart';
+                h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                heartRain.appendChild(h);
+                setTimeout(() => h.remove(), 5000);
+            }, 100);
+        }
+
+        function reproducirSonido(archivo) {
+            const audio = new Audio(archivo);
+            audio.play();
+        }
+
+        // Inicia cargando la primera pregunta
+        loadQuestion();
+    </script>
+</body>
+</html>
