@@ -1,0 +1,213 @@
+:root {
+    --color-rosa: #ff9bb3;
+    --color-lila: #d4a5ff;
+    --color-pastel: #fff0f5;
+    --color-texto: #5a3d5a;
+    --color-correcto: #8bc34a;
+    --color-incorrecto: #ff6b6b;
+    --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+body {
+    font-family: 'Comic Sans MS', sans-serif;
+    color: var(--color-texto);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background-image: url('fotofondo01.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.container {
+    background: rgba(255, 240, 245, 0.85);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    width: 90%;
+    max-width: 700px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid var(--color-lila);
+    border-radius: 20px;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.8);
+}
+
+.btn {
+    background: linear-gradient(135deg, var(--color-lila), var(--color-rosa));
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+.question-container {
+    display: none;
+}
+
+.question {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.answer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    position: relative;
+    z-index: 2;
+}
+
+.option-btn {
+    background: white;
+    border: 2px solid var(--color-lila);
+    border-radius: 20px;
+    padding: 15px;
+    cursor: pointer;
+    opacity: 1;
+    transform: none;
+    transition: var(--transition);
+}
+
+.option-btn:hover {
+    background: var(--color-lila);
+    color: white;
+}
+
+.correct {
+    background: var(--color-correcto) !important;
+    color: white !important;
+}
+
+.incorrect {
+    background: var(--color-incorrecto) !important;
+    color: white !important;
+}
+
+.final-message {
+    display: none;
+}
+
+#background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+#gameContainer {
+    width: 90%;
+    max-width: 900px;
+    text-align: center;
+    position: relative;
+    padding: 20px;
+}
+
+#logo {
+    width: 450px;
+    margin: 10px auto 20px;
+    display: block;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+}
+
+#gameCanvas {
+    position: relative;
+    width: 100%;
+    height: 400px; /* Aumentamos la altura para la pista */
+    border: 4px solid #d1a6c9;
+    border-radius: 12px;
+    background: linear-gradient(to bottom, #a8e6cf, #b8e6d5);
+    overflow: visible;
+}
+
+.track {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('pista.png') repeat-x;
+    background-size: contain;
+}
+
+#polo, #moni {
+    position: absolute;
+    bottom: 30px;
+    width: 50px;
+    transition: left 0.1s ease-out;
+}
+
+#kiki {
+    position: absolute;
+    bottom: 20px;
+    width: 80px;
+    transition: left 0.1s ease-out;
+}
+
+#startScreen, #endScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(248, 211, 224, 0.92);
+    z-index: 15;
+    padding: 20px;
+}
+
+.gatito-bg {
+    width: 220px;
+    height: 220px;
+    background: url('gatito.png') no-repeat center center;
+    background-size: contain;
+    margin-bottom: 20px;
+}
+
+.title-box {
+    background: rgba(255,255,255,0.7);
+    padding: 20px 30px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+h1, h2 {
+    color: #7d5592;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.button-container {
+    margin-top: 20px;
+}
+
+button {
+    background: linear-gradient(to bottom, #d1a6c9, #c293bf);
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    font-size: 18px;
+    border-radius: 30px;
+    cursor: pointer;
+}
