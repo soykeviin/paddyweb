@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi Princesa</title>
+    <style>
+        :root {
+            --color-rosa: #ff9bb3;
+            --color-lila: #d4a5ff;
+            --color-pastel: #fff0f5;
+            --color-texto: #5a3d5a;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            color: var(--color-texto);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background-image: url('fotofondo01.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        .container {
+            background: rgba(255, 240, 245, 0.85);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid var(--color-lila);
+            border-radius: 20px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.8);
+            user-select: none;
+        }
+        .btn {
+            background: linear-gradient(135deg, var(--color-lila), var(--color-rosa));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="login-container">
+            <h1>Bienvenida, Mi Princesa</h1>
+            <input type="text" value="Patricia Sanhueza" disabled>
+            <input type="password" id="password" placeholder="Contraseña">
+            <p class="hint" id="hint">Pista: El día que nuestras vidas cambiaron</p>
+            <button id="login-button" class="btn">Entrar</button>
+        </div>
+    </div>
+
+    <script>
+        const loginButton = document.getElementById('login-button');
+        const passwordInput = document.getElementById('password');
+        const hintElement = document.getElementById('hint');
+        const validPasswords = ["11022024", "11/02/2024", "11-02-2024", "11.02.2024", "11 02 2024"];
+        let failedAttempts = 0;
+
+        loginButton.onclick = intentarLogin;
+
+        passwordInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') intentarLogin();
+        });
+
+        function intentarLogin() {
+            const clean = passwordInput.value.replace(/\D/g, '');
+            if (validPasswords.some(p => p.replace(/\D/g, '') === clean)) {
+                window.location.href = 'juego.html'; // Redirige a la página del juego
+            } else {
+                failedAttempts++;
+                if (failedAttempts === 4) {
+                    hintElement.textContent = "Pista: día/fecha/año";
+                } else if (failedAttempts >= 5) {
+                    hintElement.textContent = "Pista: ¡Atende mi amor! 👉 día/fecha/año 👈";
+                }
+                alert("Contraseña incorrecta");
+            }
+        }
+    </script>
+</body>
+</html>
