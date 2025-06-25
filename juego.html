@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrera del Amor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f8d3e0 0%, #e0c3f8 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        #gameContainer {
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        #logo {
+            width: 450px;
+            margin: 10px auto 20px;
+            display: block;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+
+        #gameCanvas {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            border: 4px solid #d1a6c9;
+            border-radius: 12px;
+            background: linear-gradient(to bottom, #a8e6cf, #b8e6d5);
+            overflow: hidden;
+        }
+
+        .track {
+            position: absolute;
+            width: 1800px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%) scale(0.45);
+            transform-origin: top center;
+        }
+
+        #polo, #moni {
+            position: absolute;
+            bottom: -140px;
+            width: 200px;
+            transition: left 0.1s ease-out;
+        }
+
+        #kiki {
+            position: absolute;
+            bottom: 5px;
+            width: 350px;
+            transition: left 0.1s ease-out;
+        }
+
+        #startScreen, #endScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(248, 211, 224, 0.92);
+            z-index: 15;
+            padding: 20px;
+        }
+
+        .gatito-bg {
+            width: 220px;
+            height: 220px;
+            background: url('gatito.png') no-repeat center center;
+            background-size: contain;
+            margin-bottom: 20px;
+        }
+
+        .title-box {
+            background: rgba(255,255,255,0.7);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1, h2 {
+            color: #7d5592;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        button {
+            background: linear-gradient(to bottom, #d1a6c9, #c293bf);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <audio id="victorySound" src="victoria.mp3"></audio>
+    <audio id="defeatSound" src="derrota.mp3"></audio>
+
+    <div id="gameContainer">
+        <img id="logo" src="logo.png" alt="Carrera del Amor">
+        <div id="gameCanvas">
+            <div class="track" id="track">
+                <img id="polo" src="POLOpng.png" alt="Polo">
+                <img id="moni" src="moni.png" alt="Moni">
+                <img id="kiki" src="kiki.png" alt="Kiki">
+            </div>
+        </div>
+        <div id="startScreen">
+            <div class="gatito-bg"></div>
+            <div class="title-box">
+                <h1>¡ESCAPA DE KIKI!</h1>
+                <h2>Corre pulsando la barra espaciadora<br>lo más rápido que puedas</h2>
+            </div>
+            <div class="button-container">
+                <button id="startButton">Iniciar Carrera</button>
+            </div>
+        </div>
+        <div id="endScreen" style="display: none;">
+            <h1 id="endTitle"></h1>
+            <p id="endMessage"></p>
+            <div class="button-container">
+                <button id="continueButton" style="display: none;">Continuar</button>
+                <button id="retryButton" style="display: none;">Reintentar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const startScreen = document.getElementById('startScreen');
+        const endScreen = document.getElementById('endScreen');
+        const startButton = document.getElementById('startButton');
+        const continueButton = document.getElementById('continueButton');
+        const retryButton = document.getElementById('retryButton');
+        const polo = document.getElementById('polo');
+        const moni = document.getElementById('moni');
+        const kiki = document.getElementById('kiki');
+        const victorySound = document.getElementById('victorySound');
+        const defeatSound = document.getElementById('defeatSound');
+
+        let poloPosition = 0;
+        let moniPosition = 0;
+        let kikiPosition = -50;
+        let poloSpeed = 0;
+        let moniSpeed = 1.2;
+        let kikiSpeed = 2;
+        let gameInterval;
+        let isGameActive = false;
+        let kikiActive = false;
+        const pistaAncho = 1800;
+        const finishLine = pistaAncho - 100;
+
+        startButton.onclick = startGame;
+        continueButton.onclick = () => {
+            window.location.href = 'final.html'; // Redirige a la página de preguntas si gana
+        };
+        retryButton.onclick = startGame;
+
+        document.addEventListener('keydown', e => {
+            if (isGameActive && e.code === 'Space') {
+                e.preventDefault();
+                poloSpeed = 2.7;
+            }
+        });
+
+        function startGame() {
+            poloPosition = 0;
+            moniPosition = 0;
+            kikiPosition = -50;
+            poloSpeed = 0;
+            kikiActive = false;
+            isGameActive = true;
+            startScreen.style.display = 'none';
+            endScreen.style.display = 'none';
+            gameInterval = setInterval(updateGame, 20);
+        }
+
+        function updateGame() {
+            poloPosition += poloSpeed;
+            moniPosition += moniSpeed;
+            if (!kikiActive && moniPosition > 300) kikiActive = true;
+            if (kikiActive) kikiPosition += kikiSpeed;
+            poloSpeed *= 0.9;
+
+            polo.style.left = poloPosition + 'px';
+            moni.style.left = moniPosition + 'px';
+            kiki.style.left = kikiPosition + 'px';
+
+            if (poloPosition >= finishLine) endGame(true);
+            else if (moniPosition >= finishLine) endGame(false, "¡Moni ganó!");
+            else if (kikiActive && kikiPosition >= poloPosition - 30) endGame(false, "¡Kiki te atrapó!");
+        }
+
+        function endGame(win, msg = "") {
+            clearInterval(gameInterval);
+            isGameActive = false;
+            document.getElementById('endTitle').textContent = win ? "¡Felicitaciones mi amor!" : "¡Oh no!";
+            document.getElementById('endMessage').textContent = win ? "Sabía que podías ganarle a Kiki ❤️" : msg;
+            endScreen.style.display = 'flex';
+
+            if (win) {
+                victorySound.play();
+                continueButton.style.display = 'block';
+                retryButton.style.display = 'none';
+            } else {
+                defeatSound.play();
+                continueButton.style.display = 'none';
+                retryButton.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
