@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <link rel="icon" href="foto.ico" type="image/x-icon">
     <title>Carrera del Amor ❤️</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,6 +37,7 @@
             overflow: hidden;
             position: relative;
             color: var(--color-texto);
+            touch-action: manipulation;
         }
 
         /* Flores decorativas */
@@ -66,7 +67,7 @@
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255,255,255,0.3);
             overflow: hidden;
-            margin-bottom: 100px; /* Espacio para el botón móvil */
+            margin-bottom: 100px;
         }
 
         #logo {
@@ -263,7 +264,7 @@
 
         /* BOTÓN MÓVIL - IMPORTANTE */
         #mobileRunButton {
-            display: none; /* Oculto por defecto */
+            display: none;
             position: fixed;
             bottom: 20px;
             left: 50%;
@@ -271,8 +272,8 @@
             background: linear-gradient(to bottom, var(--color-rosa), var(--color-rosa-oscuro));
             color: white;
             border: none;
-            padding: 16px 40px;
-            font-size: 1.2rem;
+            padding: 20px 45px;
+            font-size: 1.3rem;
             border-radius: 50px;
             cursor: pointer;
             z-index: 20;
@@ -280,11 +281,12 @@
             font-weight: bold;
             width: 90%;
             max-width: 300px;
+            transition: transform 0.1s;
         }
 
         #mobileRunButton:active {
             background: linear-gradient(to bottom, var(--color-rosa-oscuro), #d14d8e);
-            transform: translateX(-50%) translateY(2px);
+            transform: translateX(-50%) scale(0.95);
         }
 
         /* Versión móvil */
@@ -292,7 +294,7 @@
             #gameContainer {
                 width: 95%;
                 padding: 15px;
-                margin-bottom: 120px; /* Más espacio para el botón */
+                margin-bottom: 120px;
             }
 
             #gameCanvas {
@@ -300,7 +302,11 @@
             }
 
             .track {
-                width: 2000px;
+                width: 1500px;
+            }
+
+            .finish-line {
+                right: 50px;
             }
 
             #polo, #moni {
@@ -322,7 +328,6 @@
                 height: 60px;
             }
 
-            /* Mostrar botón solo en móvil */
             #mobileRunButton {
                 display: block;
             }
@@ -457,9 +462,17 @@
         let isGameActive = false;
         let kikiActive = false;
         const trackWidth = 2500;
-        const finishLine = trackWidth - 100;
-        const maxSpeed = 3.5;
+        let finishLine = trackWidth - 100;
+        let maxSpeed = 3.5;
         let isMobile = window.innerWidth <= 768;
+
+        // Ajustar dificultad para móvil
+        if (isMobile) {
+            moniSpeed = 1.2;
+            kikiSpeed = 1.8;
+            maxSpeed = 4.0;
+            finishLine = 1400;
+        }
 
         // Inicializar el juego
         function init() {
@@ -514,15 +527,22 @@
             isMobile = window.innerWidth <= 768;
             
             if (wasMobile !== isMobile) {
+                // Ajustar dificultad según dispositivo
                 if (isMobile) {
-                    // Cambió a móvil
+                    moniSpeed = 1.2;
+                    kikiSpeed = 1.8;
+                    maxSpeed = 4.0;
+                    finishLine = 1400;
                     setupMobileControls();
                     document.removeEventListener('keydown', handleKeyDown);
                     document.removeEventListener('keyup', handleKeyUp);
                     document.getElementById('mobileInstruction').style.display = 'block';
                     document.getElementById('desktopInstruction').style.display = 'none';
                 } else {
-                    // Cambió a desktop
+                    moniSpeed = 1.5;
+                    kikiSpeed = 2.2;
+                    maxSpeed = 3.5;
+                    finishLine = trackWidth - 100;
                     mobileRunButton.removeEventListener('touchstart', runAction);
                     mobileRunButton.removeEventListener('mousedown', runAction);
                     mobileRunButton.removeEventListener('touchend', stopRun);
@@ -541,9 +561,21 @@
                 runSound.play();
                 
                 // Efecto visual al correr
+                if (isMobile) {
+                    polo.style.transform = 'scale(1.05)';
+                }
+                
                 if (!polo.classList.contains('running')) {
                     polo.classList.add('running');
-                    setTimeout(() => polo.classList.remove('running'), 100);
+                    setTimeout(() => {
+                        polo.classList.remove('running');
+                        if (isMobile) polo.style.transform = 'none';
+                    }, 100);
+                }
+                
+                // Feedback táctil si está disponible
+                if (isMobile && window.navigator.vibrate) {
+                    window.navigator.vibrate(50);
                 }
             }
         }
