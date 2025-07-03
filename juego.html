@@ -66,6 +66,7 @@
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255,255,255,0.3);
             overflow: hidden;
+            margin-bottom: 100px; /* Espacio para el botón móvil */
         }
 
         #logo {
@@ -89,7 +90,7 @@
 
         .track {
             position: absolute;
-            width: 2500px; /* Pista más larga */
+            width: 2500px;
             height: 100%;
             left: 0;
             background-image: 
@@ -260,11 +261,38 @@
             }
         }
 
+        /* BOTÓN MÓVIL - IMPORTANTE */
+        #mobileRunButton {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to bottom, var(--color-rosa), var(--color-rosa-oscuro));
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            font-weight: bold;
+            width: 90%;
+            max-width: 300px;
+        }
+
+        #mobileRunButton:active {
+            background: linear-gradient(to bottom, var(--color-rosa-oscuro), #d14d8e);
+            transform: translateX(-50%) translateY(2px);
+        }
+
         /* Versión móvil */
         @media only screen and (max-width: 768px) {
             #gameContainer {
                 width: 95%;
                 padding: 15px;
+                margin-bottom: 120px; /* Más espacio para el botón */
             }
 
             #gameCanvas {
@@ -294,30 +322,9 @@
                 height: 60px;
             }
 
+            /* Mostrar botón solo en móvil */
             #mobileRunButton {
                 display: block;
-                background: linear-gradient(to bottom, var(--color-rosa), var(--color-rosa-oscuro));
-                color: white;
-                border: none;
-                padding: 16px 50px;
-                font-size: 1.2rem;
-                border-radius: 50px;
-                cursor: pointer;
-                margin: 20px auto 0;
-                position: fixed;
-                bottom: 30px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 20;
-                box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-                font-weight: bold;
-                width: 90%;
-                max-width: 300px;
-            }
-
-            #mobileRunButton:active {
-                background: linear-gradient(to bottom, var(--color-rosa-oscuro), #d14d8e);
-                transform: translateX(-50%) translateY(2px);
             }
 
             #mobileInstruction {
@@ -329,15 +336,6 @@
             #desktopInstruction {
                 display: none;
             }
-        }
-
-        /* Ocultar elementos en desktop */
-        #mobileRunButton {
-            display: none;
-        }
-
-        #mobileInstruction {
-            display: none;
         }
 
         /* Animación de shake para errores */
@@ -424,9 +422,10 @@
                 </div>
             </div>
         </div>
-        
-        <button id="mobileRunButton">¡CORRE!</button>
     </div>
+    
+    <!-- BOTÓN MÓVIL - FUERA DEL CONTENEDOR PRINCIPAL -->
+    <button id="mobileRunButton">¡CORRE!</button>
 
     <script>
         // Elementos del juego
@@ -462,30 +461,78 @@
         const maxSpeed = 3.5;
         let isMobile = window.innerWidth <= 768;
 
-        // Event listeners
-        startButton.onclick = startGame;
-        continueButton.onclick = () => window.location.href = 'final.html';
-        retryButton.onclick = startGame;
+        // Inicializar el juego
+        function init() {
+            // Configurar controles según dispositivo
+            if (isMobile) {
+                setupMobileControls();
+                document.getElementById('mobileInstruction').style.display = 'block';
+                document.getElementById('desktopInstruction').style.display = 'none';
+            } else {
+                document.getElementById('mobileInstruction').style.display = 'none';
+                document.getElementById('desktopInstruction').style.display = 'block';
+            }
+            
+            // Event listeners comunes
+            startButton.onclick = startGame;
+            continueButton.onclick = () => window.location.href = 'final.html';
+            retryButton.onclick = startGame;
+            
+            // Detectar cambios de tamaño
+            window.addEventListener('resize', handleResize);
+        }
 
-        // Control móvil
-        mobileRunButton.addEventListener('touchstart', runAction);
-        mobileRunButton.addEventListener('mousedown', runAction);
-        mobileRunButton.addEventListener('touchend', stopRun);
-        mobileRunButton.addEventListener('mouseup', stopRun);
+        // Configurar controles para móvil
+        function setupMobileControls() {
+            mobileRunButton.addEventListener('touchstart', runAction, {passive: true});
+            mobileRunButton.addEventListener('mousedown', runAction);
+            mobileRunButton.addEventListener('touchend', stopRun, {passive: true});
+            mobileRunButton.addEventListener('mouseup', stopRun);
+        }
 
-        // Control teclado
-        document.addEventListener('keydown', e => {
+        // Configurar controles para desktop
+        function setupDesktopControls() {
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+        }
+
+        function handleKeyDown(e) {
             if (isGameActive && e.code === 'Space') {
                 e.preventDefault();
                 runAction();
             }
-        });
+        }
 
-        document.addEventListener('keyup', e => {
+        function handleKeyUp(e) {
             if (e.code === 'Space') {
                 stopRun();
             }
-        });
+        }
+
+        function handleResize() {
+            const wasMobile = isMobile;
+            isMobile = window.innerWidth <= 768;
+            
+            if (wasMobile !== isMobile) {
+                if (isMobile) {
+                    // Cambió a móvil
+                    setupMobileControls();
+                    document.removeEventListener('keydown', handleKeyDown);
+                    document.removeEventListener('keyup', handleKeyUp);
+                    document.getElementById('mobileInstruction').style.display = 'block';
+                    document.getElementById('desktopInstruction').style.display = 'none';
+                } else {
+                    // Cambió a desktop
+                    mobileRunButton.removeEventListener('touchstart', runAction);
+                    mobileRunButton.removeEventListener('mousedown', runAction);
+                    mobileRunButton.removeEventListener('touchend', stopRun);
+                    mobileRunButton.removeEventListener('mouseup', stopRun);
+                    setupDesktopControls();
+                    document.getElementById('mobileInstruction').style.display = 'none';
+                    document.getElementById('desktopInstruction').style.display = 'block';
+                }
+            }
+        }
 
         function runAction() {
             if (isGameActive) {
@@ -520,6 +567,13 @@
             startScreen.style.display = 'none';
             endScreen.style.display = 'none';
             track.style.transform = 'translateX(0)';
+            
+            // Configurar controles según dispositivo
+            if (isMobile) {
+                mobileRunButton.style.display = 'block';
+            } else {
+                mobileRunButton.style.display = 'none';
+            }
             
             // Iniciar juego
             gameInterval = setInterval(updateGame, 20);
@@ -572,6 +626,7 @@
         function endGame(win, message) {
             clearInterval(gameInterval);
             isGameActive = false;
+            mobileRunButton.style.display = 'none';
             
             // Configurar pantalla final
             document.getElementById('endTitle').textContent = win ? "¡Felicitaciones!" : "¡Oh no!";
@@ -612,19 +667,8 @@
             }
         }
 
-        // Detectar cambio de tamaño para móvil
-        window.addEventListener('resize', () => {
-            isMobile = window.innerWidth <= 768;
-        });
-
-        // Mostrar instrucciones según dispositivo
-        if (isMobile) {
-            document.getElementById('mobileInstruction').style.display = 'block';
-            document.getElementById('desktopInstruction').style.display = 'none';
-        } else {
-            document.getElementById('mobileInstruction').style.display = 'none';
-            document.getElementById('desktopInstruction').style.display = 'block';
-        }
+        // Iniciar el juego cuando la página cargue
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
