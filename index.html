@@ -3,18 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Un regalo especial para la persona más importante en mi vida">
     <link rel="icon" href="foto.ico" type="image/x-icon">
-    <title>Para mi Princesa</title>
+    <title>Para mi Princesa ❤️</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --color-rosa: #ff9bb3;
+            --color-rosa-oscuro: #e86d8d;
             --color-lila: #d4a5ff;
+            --color-lila-oscuro: #b580e6;
             --color-pastel: #fff0f5;
             --color-texto: #5a3d5a;
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            --sombra: 0 10px 30px rgba(0,0,0,0.15);
+            --sombra-hover: 0 15px 35px rgba(0,0,0,0.2);
         }
+        
         body {
-            font-family: 'Comic Sans MS', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             color: var(--color-texto);
             margin: 0;
             padding: 0;
@@ -33,43 +42,230 @@
             -moz-user-select: none;
             -ms-user-select: none;
         }
+        
+        /* Efecto de sobreposición para mejorar legibilidad */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 240, 245, 0.3);
+            z-index: -1;
+        }
+        
         .container {
-            background: rgba(255, 240, 245, 0.85);
+            background: rgba(255, 240, 245, 0.92);
             border-radius: 20px;
             padding: 2.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            width: 90%;
-            max-width: 700px;
+            box-shadow: var(--sombra);
+            width: 85%; /* Ajustado para mejor responsividad */
+            max-width: 600px; /* Reducido ligeramente */
             text-align: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: var(--transition);
+            margin: 20px; /* Margen adicional */
         }
+        
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--sombra-hover);
+        }
+        
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem; /* Ajustado para pantallas pequeñas */
+            margin-bottom: 1.5rem;
+            color: var(--color-texto);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+            padding: 0 15px; /* Asegura que no toque bordes */
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-lila), var(--color-rosa));
+            border-radius: 3px;
+        }
+        
+        .input-container {
+            position: relative;
+            margin: 1.5rem 0;
+            width: 90%; /* Ancho reducido */
+            max-width: 400px; /* Máximo ancho para inputs */
+            margin-left: auto;
+            margin-right: auto; /* Centrado */
+            padding: 0 5px; /* Espaciado interno */
+        }
+        
         input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 12px;
+            width: calc(100% - 40px); /* Ajuste del ancho considerando padding */
+            padding: 15px 20px; /* Padding más equilibrado */
             margin: 10px 0;
             border: 2px solid var(--color-lila);
-            border-radius: 20px;
+            border-radius: 25px;
             font-size: 1rem;
-            background: rgba(255,255,255,0.8);
-            user-select: none;
+            background: rgba(255,255,255,0.9);
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
         }
+        
+        input[type="text"]:disabled {
+            background: rgba(255,255,255,0.7);
+            color: var(--color-texto);
+            font-weight: 600;
+            text-align: center;
+            cursor: not-allowed;
+        }
+        
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: var(--color-rosa);
+            box-shadow: 0 0 0 3px rgba(255, 155, 179, 0.3);
+        }
+        
         .btn {
             background: linear-gradient(135deg, var(--color-lila), var(--color-rosa));
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 15px 40px;
             border-radius: 30px;
             cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1.5rem; /* Más espacio arriba */
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(212, 165, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Montserrat', sans-serif;
+            width: auto; /* Ancho natural */
+            display: inline-block; /* Para que no ocupe todo el ancho */
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, var(--color-lila-oscuro), var(--color-rosa-oscuro));
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(212, 165, 255, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .hint {
+            font-size: 0.9rem;
+            color: var(--color-texto);
+            opacity: 0.8;
+            margin-top: 1.5rem;
+            transition: var(--transition);
+            font-style: italic;
+            padding: 0 15px; /* Para que no toque bordes */
+            max-width: 90%; /* Limitar ancho */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .corazon {
+            color: #ff6b8b;
+            font-size: 1.2em;
+            vertical-align: middle;
+            animation: latido 1.5s infinite;
+            display: inline-block;
+        }
+        
+        @keyframes latido {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Efectos especiales */
+        .flor {
+            position: absolute;
+            opacity: 0.6;
+            z-index: -1;
+            animation: caer linear infinite;
+        }
+        
+        @keyframes caer {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+        
+        /* Animación de shake para errores */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.8rem;
+                width: 80%;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .input-container {
+                width: 85%;
+            }
+            
+            .btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+                width: 75%;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .input-container {
+                width: 90%;
+            }
+            
+            input[type="text"], input[type="password"] {
+                padding: 12px 15px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="login-container">
-            <h1>Bienvenida, Mi Princesa</h1>
-            <input type="text" value="Patricia Sanhueza" disabled>
-            <input type="password" id="password" placeholder="Contraseña">
-            <p class="hint" id="hint">Pista: El día que nuestras vidas cambiaron</p>
-            <button id="login-button" class="btn">Entrar</button>
+            <h1>Bienvenida, Mi Princesa <span class="corazon">❤️</span></h1>
+            <div class="input-container">
+                <input type="text" value="Patricia Sanhueza" disabled>
+            </div>
+            <div class="input-container">
+                <input type="password" id="password" placeholder="Ingresa tu contraseña especial">
+            </div>
+            <p class="hint" id="hint">Pista: El día más importante de mi vida <span class="corazon">❤️</span></p>
+            <button id="login-button" class="btn">Descubre tu sorpresa</button>
         </div>
     </div>
 
@@ -80,6 +276,28 @@
         const validPasswords = ["11022024", "11/02/2024", "11-02-2024", "11.02.2024", "11 02 2024"];
         let failedAttempts = 0;
 
+        // Crear flores flotantes
+        function crearFlores() {
+            const flores = ['🌸', '🌹', '🌺', '🌻', '🌼', '🏵️', '💐', '💮'];
+            const colores = ['#ff9bb3', '#d4a5ff', '#ffb3d9', '#ffb3b3', '#b3d9ff'];
+            
+            for (let i = 0; i < 15; i++) {
+                const flor = document.createElement('div');
+                flor.className = 'flor';
+                flor.textContent = flores[Math.floor(Math.random() * flores.length)];
+                flor.style.left = Math.random() * 100 + 'vw';
+                flor.style.top = -50 + 'px';
+                flor.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                flor.style.color = colores[Math.floor(Math.random() * colores.length)];
+                flor.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                flor.style.animationDelay = Math.random() * 5 + 's';
+                document.body.appendChild(flor);
+            }
+        }
+
+        // Iniciar animación de flores
+        crearFlores();
+
         loginButton.onclick = intentarLogin;
 
         passwordInput.addEventListener('keydown', e => {
@@ -89,15 +307,56 @@
         function intentarLogin() {
             const clean = passwordInput.value.replace(/\D/g, '');
             if (validPasswords.some(p => p.replace(/\D/g, '') === clean)) {
-                window.location.href = 'juego.html'; // Redirige a la página del juego
+                // Efecto de confeti antes de redirigir
+                loginButton.textContent = "¡Correcto!";
+                loginButton.style.background = "linear-gradient(135deg, #4CAF50, #2E7D32)";
+                
+                // Crear efecto de confeti
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const corazon = document.createElement('div');
+                        corazon.innerHTML = '❤️';
+                        corazon.style.position = 'absolute';
+                        corazon.style.left = Math.random() * 100 + 'vw';
+                        corazon.style.top = '-50px';
+                        corazon.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                        corazon.style.animation = `caer ${Math.random() * 3 + 2}s linear forwards`;
+                        document.body.appendChild(corazon);
+                        
+                        // Eliminar después de animación
+                        setTimeout(() => {
+                            corazon.remove();
+                        }, 5000);
+                    }, i * 100);
+                }
+                
+                setTimeout(() => {
+                    window.location.href = 'juego.html';
+                }, 2000);
             } else {
                 failedAttempts++;
-                if (failedAttempts === 4) {
-                    hintElement.textContent = "Pista: día/fecha/año";
+                passwordInput.style.borderColor = "#ff6b6b";
+                passwordInput.style.animation = "shake 0.5s";
+                
+                setTimeout(() => {
+                    passwordInput.style.animation = "";
+                }, 500);
+                
+                if (failedAttempts === 3) {
+                    hintElement.textContent = "Pista: día/mes/año (formato numérico)";
                 } else if (failedAttempts >= 5) {
-                    hintElement.textContent = "Pista: ¡Atende mi amor! 👉 día/fecha/año 👈";
+                    hintElement.innerHTML = "Pista: <strong>11/02/2024</strong> - El día que te conocí <span class='corazon'>❤️</span>";
                 }
-                alert("Contraseña incorrecta");
+                
+                // Mostrar mensaje más romántico
+                const mensajesError = [
+                    "Sigue intentando, mi amor",
+                    "Quiero que lo recuerdes con el corazón",
+                    "Piensa en nuestro día especial",
+                    "Eres mi razón, recuerda nuestra fecha"
+                ];
+                
+                alert(mensajesError[Math.min(failedAttempts - 1, mensajesError.length - 1)]);
             }
         }
     </script>
